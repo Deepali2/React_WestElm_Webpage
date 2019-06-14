@@ -20,8 +20,12 @@
         <li>
           <h1>{item.name}</h1>
           <p>${item.priceRange.selling.high} - ${item.priceRange.selling.low}</p>
-
           <img src={item.hero.href} alt='hero image'/> 
+          <img src={item.thumbnail.href} alt='thumbnail image'/>
+          <ul>{item.images.map((image, index) => (
+            <li><img src={image.href} alt='tiny image' key={index}/></li>
+          ))}
+          </ul>
         </li>
       )
     }
