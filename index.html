@@ -17,7 +17,12 @@
   <script type="text/babel">
     const Item = ({item}) => {
       return (
-        <li>{item.name}</li>
+        <li>
+          <h1>{item.name}</h1>
+          <p>${item.priceRange.selling.high} - ${item.priceRange.selling.low}</p>
+
+          <img src={item.hero.href} alt='hero image'/> 
+        </li>
       )
     }
     class ItemsList extends React.Component {
