@@ -17,28 +17,46 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
   <script type="text/babel">
 
-    const Item = ({item}) => {
+    const ItemsList = () => {      
+      console.log(data.groups);
+      let itemsData = data.groups;
       return (
-        <li className="card">
-          <div>
-            <h1 className="item-name">{item.name}</h1>
-            <p className="item-price">${item.priceRange.selling.high} - ${item.priceRange.selling.low}</p>          
-          </div> 
-          <div className='heroImage'><img src={item.hero.href} alt='hero image'/></div>
-        </li>
-      )
+        <ul className='container'>
+          {data.groups.map(item => (<Item item={item} key={item.id}/>))}
+        </ul>
+      );      
     }
-    class ItemsList extends React.Component {
-      render() {
-        console.log(data.groups);
-        let itemsData = data.groups;
-        return (
-          <ul className='container'>
-            {data.groups.map(item => (<Item item={item} key={item.id}/>))}
-          </ul>
-        );
+
+    class Item extends React.Component{
+      constructor(props) {
+        super(props);
+        this.state = {
+          thumbnails: []
+        }
       }
+      render() {
+        let item = this.props.item;
+        return (
+        <li className="card">
+          <div className='name-price'>
+            <h1 className="item-name">{item.name}</h1>
+            <p className="item-price">${item.priceRange.selling.low} - ${item.priceRange.selling.high}</p>          
+          </div> 
+          <div><img src={item.hero.href} alt='hero image' className='heroImage'/></div>
+
+          <div className='thumbnails'>            
+            <ul className="all-Thumbnail-Images">
+              <li><img src={item.thumbnail.href} alt='thumbnail image' className='thumbnail'/></li>
+              {item.images.map((image, index) => (
+              <li key={index}><img src={image.href} alt='tiny image' className='thumbnail' /></li>            
+          ))}
+          </ul>
+          </div>
+        </li>
+        )
+      }  
     }
+ 
   
     ReactDOM.render(<ItemsList />, document.getElementById('root'));
   </script>
