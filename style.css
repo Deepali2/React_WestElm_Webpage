@@ -29,7 +29,7 @@ html {
   border-radius: 12px;
   overflow: hidden;
   transition: all .2s linear;
-  width: 100%;
+  max-width: calc(33% - 2rem);
 }
 
 .card:hover {
