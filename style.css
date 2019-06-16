@@ -11,10 +11,10 @@ html {
   background: #F6F6F6;
 }
 
-html, body, #root, .carousel {
-	height:100%;
-	margin: 0;
-	width: 100%;
+.carousel {
+	height:80%;
+  width: 80%;
+  margin: 0 auto;
 }
 
 .image-slide {

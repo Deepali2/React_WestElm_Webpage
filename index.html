@@ -17,49 +17,53 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
   <script type="text/babel">
 
-    class Carousel extends React.Component {
-	    constructor (props) {
-		  super(props);		
-		  this.state = {
-			currentImageIndex: 0
-		  };
-		
-		  this.nextSlide = this.nextSlide.bind(this);
-		  this.previousSlide = this.previousSlide.bind(this);
-	  }
-	
-      previousSlide () {
-        const lastIndex = this.props.imgUrls.length - 1;
-        const { currentImageIndex } = this.state;
-        const shouldResetIndex = currentImageIndex === 0;
-        const index =  shouldResetIndex ? lastIndex : currentImageIndex - 1;
-        
-        this.setState({
-          currentImageIndex: index
-        });
-      }
-	
-      nextSlide () {
-        const lastIndex = this.props.imgUrls.length - 1;
-        const { currentImageIndex } = this.state;
-        const shouldResetIndex = currentImageIndex === lastIndex;
-        const index =  shouldResetIndex ? 0 : currentImageIndex + 1;
 
-        this.setState({
-          currentImageIndex: index
-        });
-      }
-	
-      render () {
-        return (
-          <div className="carousel">
-            <Arrow direction="left" clickFunction={ this.previousSlide } glyph="&#9664;" />
-            <ImageSlide url={ this.props.imgUrls[this.state.currentImageIndex] } />
-            <Arrow direction="right" clickFunction={ this.nextSlide } glyph="&#9654;" />
-          </div>
-        );
-      }
-    }
+
+class Carousel extends React.Component {
+  constructor (props) {
+  super(props);		
+  this.state = {
+  currentImageIndex: 0
+  };
+
+  this.nextSlide = this.nextSlide.bind(this);
+  this.previousSlide = this.previousSlide.bind(this);
+}
+
+  previousSlide () {
+    const lastIndex = this.props.imgUrls.length - 1;
+    const { currentImageIndex } = this.state;
+    const shouldResetIndex = currentImageIndex === 0;
+    const index =  shouldResetIndex ? lastIndex : currentImageIndex - 1;
+    
+    this.setState({
+      currentImageIndex: index
+    });
+  }
+
+  nextSlide () {
+    const lastIndex = this.props.imgUrls.length - 1;
+    const { currentImageIndex } = this.state;
+    const shouldResetIndex = currentImageIndex === lastIndex;
+    const index =  shouldResetIndex ? 0 : currentImageIndex + 1;
+
+    this.setState({
+      currentImageIndex: index
+    });
+  }
+
+  render () {
+    return (          
+      <div className="carousel">
+        <Arrow direction="left" clickFunction={ this.previousSlide } glyph="&#9664;" />
+        <ImageSlide url={ this.props.imgUrls[this.state.currentImageIndex] } />
+        <Arrow direction="right" clickFunction={ this.nextSlide } glyph="&#9654;" />
+      </div>
+    );
+  }
+}
+
+
 
     const Arrow = ({ direction, clickFunction, glyph }) => (
       <div 
@@ -81,16 +85,41 @@
       );
     }
 
-    const ItemsList = () => {      
-      console.log(data.groups);
-      let itemsData = data.groups;
-      return (
-        <ul className='container'>
-          {data.groups.map(item => (<Item item={item} key={item.id}/>))}
-        </ul>
-      );      
-    }
+    class ItemsList extends React.Component {  
+      constructor(props) {
+        super(props);
+        this.state = {
+          overlayShow: false
+        }
+        this.handleOverlayShow = this.handleOverlayShow.bind(this);
+        this.resetOverlayShows = this.resetOverlayShows.bind(this);
+      }        
+      
+      handleOverlayShow() {
+        this.setState({overlayShow: true});
+      }
 
+      resetOverlayShows() {
+        this.setState({overlayShow: false});
+      }
+
+      render() {
+        let itemsData = data.groups;
+        return (
+          <div >
+            <ul className='container'>
+            {data.groups.map(item => 
+            (<Item 
+              item={item} 
+              key={item.id} 
+              overlayShow={this.state.overlayShow} 
+              handleOverlayShow = {this.handleOverlayShow}
+              />))}
+            </ul>
+          </div>
+        ); 
+      }            
+    }
 
     class Item extends React.Component{
       constructor(props) {
@@ -98,10 +127,8 @@
         this.state = {
           imgUrls: [],
           imageUrl: props.item.hero.href,
-          overlayShow: false
         }
-        this.clickHandler = this.clickHandler.bind(this);
-        this.handleOverlayShow = this.handleOverlayShow.bind(this);
+        this.clickHandler = this.clickHandler.bind(this);     
       }  
 
       componentDidMount(props) {
@@ -117,21 +144,17 @@
         this.setState({imageUrl: e.target.src});
       }
 
-      handleOverlayShow() {
-        this.setState({overlayShow: true});
-      }
-
       render() {
         let item = this.props.item;
         return (
-          <li className="card">
-            {this.state.overlayShow ? <Carousel imgUrls={this.state.imgUrls} /> : null}
+          <li className="card">           
+            {this.props.overlayShow ? <Carousel imgUrls={this.state.imgUrls} resetOverlayShows={this.props.resetOverlayShows} /> : null}
             <div>
               <div className='name-price'>
                 <h1 className="item-name">{item.name}</h1>
                 <p className="item-price">${item.priceRange.selling.low} - ${item.priceRange.selling.high}</p>          
               </div> 
-              <div><img src={this.state.imageUrl} alt='hero image' className='heroImage' onClick={this.handleOverlayShow} /></div>
+              <div><img src={this.state.imageUrl} alt='hero image' className='heroImage' onClick={this.props.handleOverlayShow} /></div>
               
               <div className='thumbnails'>            
                 <ul className="all-Thumbnail-Images">
