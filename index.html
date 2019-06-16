@@ -17,6 +17,69 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
   <script type="text/babel">
 
+    class Carousel extends React.Component {
+	    constructor (props) {
+		  super(props);		
+		  this.state = {
+			currentImageIndex: 0
+		  };
+		
+		  this.nextSlide = this.nextSlide.bind(this);
+		  this.previousSlide = this.previousSlide.bind(this);
+	  }
+	
+      previousSlide () {
+        const lastIndex = this.props.imgUrls.length - 1;
+        const { currentImageIndex } = this.state;
+        const shouldResetIndex = currentImageIndex === 0;
+        const index =  shouldResetIndex ? lastIndex : currentImageIndex - 1;
+        
+        this.setState({
+          currentImageIndex: index
+        });
+      }
+	
+      nextSlide () {
+        const lastIndex = this.props.imgUrls.length - 1;
+        const { currentImageIndex } = this.state;
+        const shouldResetIndex = currentImageIndex === lastIndex;
+        const index =  shouldResetIndex ? 0 : currentImageIndex + 1;
+
+        this.setState({
+          currentImageIndex: index
+        });
+      }
+	
+      render () {
+        return (
+          <div className="carousel">
+            <Arrow direction="left" clickFunction={ this.previousSlide } glyph="&#9664;" />
+            <ImageSlide url={ this.props.imgUrls[this.state.currentImageIndex] } />
+            <Arrow direction="right" clickFunction={ this.nextSlide } glyph="&#9654;" />
+          </div>
+        );
+      }
+    }
+
+    const Arrow = ({ direction, clickFunction, glyph }) => (
+      <div 
+        className={ `slide-arrow ${direction}` } 
+        onClick={ clickFunction }>
+        { glyph } 
+      </div>
+    );
+
+    const ImageSlide = ({ url }) => {
+      const styles = {
+      backgroundImage: `url(${url})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    };
+    
+      return (
+        <div className="image-slide" style={styles}></div>
+      );
+    }
 
     const ItemsList = () => {      
       console.log(data.groups);
@@ -28,76 +91,6 @@
       );      
     }
 
-    class Carousel extends React.Component {
-      constructor({imgUrls}) {
-        super({imgUrls});
-        this.state = {
-          currentImageIndex: 0,          
-        }
-        this.previousSlide = this.previousSlide.bind(this);
-        this.nextSlide = this.nextSlide.bind(this);
-      }
-      previousSlide() {
-        const lastIndex = imgUrls.length - 1;
-        const {currentImageIndex} = this.state;
-        const shouldResetIndex = currentImageIndex === 0;
-        const index = shouldResetIndex ? lastIndex : currentImageIndex - 1;
-      
-        this.setState({
-          currentImageIndex: index
-        })
-      }
-
-      nextSlide() {
-        const lastIndex = imgUrls.length - 1;
-        const {currentImageIndex} = this.state;
-        const shouldResetIndex = currentImageIndex === lastIndex;
-        const index = shouldResetIndex ? 0 : currentImageIndex + 1;
-
-        this.setState({
-          currentImageIndex: index
-        })
-      }
-
-      render() {
-        console.log('Hi from the Carousel COMPONENT')
-        return (
-          <div className='carousel'>
-            <Arrow 
-              direction='left'
-              clickFunction={this.previousSlide}
-              glyph='&#9664;'
-            />
-            <ImageSlide url={imgUrls[this.state.currentImageIndex]} />
-            <Arrow 
-              direction='right'
-              clickFunction={this.nextSlide}
-              glyph='&#9654;'
-            />
-          </div>
-        );
-      }
-    }
-
-    const ImageSlide = ({url}) => {
-      const styles = {
-        backgroundImage: `url(${url})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      };
-      return (
-        <div className="image-slide" style={styles}></div>
-      );
-    }
-
-    const Arrow = ({direction, clickFunction, glyph}) => {
-      <div 
-        className={`slide-arror${direction}`}
-        onClick={clickFunction}
-        >
-        {glyph}
-      </div>
-    }
 
     class Item extends React.Component{
       constructor(props) {
@@ -108,7 +101,7 @@
           overlayShow: false
         }
         this.clickHandler = this.clickHandler.bind(this);
-        this.carousel = this.carousel.bind(this);
+        this.handleOverlayShow = this.handleOverlayShow.bind(this);
       }  
 
       componentDidMount(props) {
@@ -121,37 +114,36 @@
       
       clickHandler(e) { 
         // e.target.classList.add("selectedThumbnail");
-        
         this.setState({imageUrl: e.target.src});
       }
 
-      carousel() {
-        console.log(this.state.imgUrls);
-        return(  
-          <div className='carousel'><Carousel imgUrls={this.state.imgUrls}/>I AM CAROUSWl</div>
-        );
+      handleOverlayShow() {
+        this.setState({overlayShow: true});
       }
 
       render() {
         let item = this.props.item;
         return (
-        <li className="card">
-            <div className='name-price'>
-              <h1 className="item-name">{item.name}</h1>
-              <p className="item-price">${item.priceRange.selling.low} - ${item.priceRange.selling.high}</p>          
-            </div> 
-            <div><img src={this.state.imageUrl} alt='hero image' className='heroImage' onClick={this.carousel} /></div>
-            
-            <div className='thumbnails'>            
-              <ul className="all-Thumbnail-Images">
-                <li><img src={item.thumbnail.href} alt='thumbnail image' className='thumbnail' onClick={(e) => this.clickHandler(e)} /></li>
-                {item.images.map((image, index) => (
-                <li key={index}><img src={image.href} alt='tiny image' className='thumbnail' onClick={(e) => this.clickHandler(e)} /></li>            
-                ))}
-              </ul>
-            </div>   
-        </li>
-
+          <li className="card">
+            {this.state.overlayShow ? <Carousel imgUrls={this.state.imgUrls} /> : null}
+            <div>
+              <div className='name-price'>
+                <h1 className="item-name">{item.name}</h1>
+                <p className="item-price">${item.priceRange.selling.low} - ${item.priceRange.selling.high}</p>          
+              </div> 
+              <div><img src={this.state.imageUrl} alt='hero image' className='heroImage' onClick={this.handleOverlayShow} /></div>
+              
+              <div className='thumbnails'>            
+                <ul className="all-Thumbnail-Images">
+                  <li><img src={item.thumbnail.href} alt='thumbnail image' className='thumbnail' onClick={(e) => this.clickHandler(e)} /></li>
+                  {item.images.map((image, index) => (
+                  <li key={index}><img src={image.href} alt='tiny image' className='thumbnail' onClick={(e) => this.clickHandler(e)} /></li>            
+                  ))}
+                </ul>
+              </div> 
+            </div>  
+          </li>
+         
         )
       }  
     }

@@ -11,6 +11,34 @@ html {
   background: #F6F6F6;
 }
 
+html, body, #root, .carousel {
+	height:100%;
+	margin: 0;
+	width: 100%;
+}
+
+.image-slide {
+	height: 100%;
+	width: 100%;
+	transition: background-image .3s ease-in-out;
+}
+
+.slide-arrow {
+	color: gray;
+	cursor: pointer;
+	font-size: 2rem;
+	position: fixed;
+	top: 50%;
+}
+
+.slide-arrow.right {
+	right: 1rem;
+}
+
+.slide-arrow.left {
+	left: 1rem;
+}
+
 .item-price {
   text-align: center;
   margin: 0;
@@ -20,14 +48,6 @@ html {
 .container {
   display: flex;
   flex-wrap: wrap;
-}
-
-.carousel {
-  z-index: 20;
-  background-color: red;
-  height: 200px;
-  width: 200px;
-  color: green;
 }
 
 .card {
